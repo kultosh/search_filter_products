@@ -5437,7 +5437,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+//
+//
+//
+//
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {
+      products: [],
+      pagination: {}
+    };
+  },
+  created: function created() {
+    this.fetchProducts();
+  },
+  methods: {
+    fetchProducts: function fetchProducts() {
+      var _this = this;
+
+      // const page_url = "/api/product";
+      axios.get('/api/product').then(function (response) {
+        console.log(response.data);
+        _this.products = response.data.products;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -28508,103 +28535,36 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container mt-5" }, [
+    _c(
+      "div",
+      { staticClass: "row" },
+      _vm._l(_vm.products, function (product) {
+        return _c("div", { key: product.id, staticClass: "col-md-4 mb-5" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("img", { attrs: { src: product.image, alt: "" } }),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body text-center" }, [
+              _c("h5", { staticClass: "card-title" }, [
+                _vm._v(_vm._s(product.name)),
+              ]),
+              _vm._v(" "),
+              _c("p", { staticClass: "card-text" }, [
+                _vm._v(_vm._s(product.description.substring(0, 100) + "....")),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _vm._v("$" + _vm._s(product.price)),
+            ]),
+          ]),
+        ])
+      }),
+      0
+    ),
+  ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container mt-5" }, [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-4 mb-5" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("img", {
-              attrs: {
-                src: "https://m.media-amazon.com/images/I/A13usaonutL._CLa%7C2140%2C2000%7C61ug1HZspNL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX342._SX._UX._SY._UY_.png",
-                alt: "",
-              },
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body text-center" }, [
-              _vm._v("Progrmaing T-Shirt Black"),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [_vm._v("$19")]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4 mb-5" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("img", {
-              attrs: {
-                src: "https://m.media-amazon.com/images/I/B1DBWbloIpS._CLa%7C2140%2C2000%7C61ug1HZspNL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX342._SX._UX._SY._UY_.png",
-                alt: "",
-              },
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body text-center" }, [
-              _vm._v("Progrmaing T-Shirt Gray "),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [_vm._v("$19")]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4 mb-5" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("img", {
-              attrs: {
-                src: "https://m.media-amazon.com/images/I/B1OGJ8t+8ZS._CLa%7C2140%2C2000%7C61ug1HZspNL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX342._SX._UX._SY._UY_.png",
-                alt: "",
-              },
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body text-center" }, [
-              _vm._v("Progrmaing T-Shirt Brown "),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [_vm._v("$19")]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4 mb-5" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("img", {
-              attrs: {
-                src: "https://m.media-amazon.com/images/I/B1F9XqluwtS._CLa%7C2140%2C2000%7C61ug1HZspNL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX342._SX._UX._SY._UY_.png",
-                alt: "",
-              },
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body text-center" }, [
-              _vm._v("Gold Sunflower"),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [_vm._v("$19")]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4 mb-5" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("img", {
-              attrs: {
-                src: "https://m.media-amazon.com/images/I/A13usaonutL._CLa%7C2140%2C2000%7C61ug1HZspNL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX342._SX._UX._SY._UY_.png",
-                alt: "",
-              },
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body text-center" }, [
-              _vm._v("Gold Sunflower"),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [_vm._v("$19")]),
-          ]),
-        ]),
-      ]),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
