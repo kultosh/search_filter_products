@@ -26,6 +26,6 @@
     "dependencies": {
         "autoprefixer": "10.4.5",
         "bootstrap-vue": "^2.22.0",
-        "vue-router": "^4.0.15"
+        "vue-router": "^3.3.4"
     }
 }
