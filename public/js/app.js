@@ -5441,6 +5441,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -5452,16 +5467,27 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchProducts();
   },
   methods: {
-    fetchProducts: function fetchProducts() {
+    fetchProducts: function fetchProducts(page_url) {
       var _this = this;
 
-      // const page_url = "/api/product";
-      axios.get('/api/product').then(function (response) {
-        console.log(response.data);
-        _this.products = response.data.products;
+      page_url = page_url || "/api/product";
+      axios.get(page_url).then(function (response) {
+        console.log(response);
+        _this.products = response.data.products.data;
+
+        _this.makePagination(response.data.products.current_page, response.data.products.last_page, response.data.products.next_page_url, response.data.products.prev_page_url);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    makePagination: function makePagination(current_page, last_page, next_page_url, prev_page_url) {
+      var pagination = {
+        current_page: current_page,
+        last_page: last_page,
+        next_page_url: next_page_url,
+        prev_page_url: prev_page_url
+      };
+      this.pagination = pagination;
     }
   }
 });
@@ -28548,10 +28574,6 @@ var render = function () {
               _c("h5", { staticClass: "card-title" }, [
                 _vm._v(_vm._s(product.name)),
               ]),
-              _vm._v(" "),
-              _c("p", { staticClass: "card-text" }, [
-                _vm._v(_vm._s(product.description.substring(0, 100) + "....")),
-              ]),
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "card-body" }, [
@@ -28561,6 +28583,79 @@ var render = function () {
         ])
       }),
       0
+    ),
+    _vm._v(" "),
+    _c(
+      "nav",
+      {
+        staticClass: "mt-4 mx-auto",
+        staticStyle: { width: "400px" },
+        attrs: { "aria-label": "Page navigation example" },
+      },
+      [
+        _c("ul", { staticClass: "pagination" }, [
+          _c(
+            "li",
+            {
+              class: [
+                { "page-item": true },
+                { disabled: !_vm.pagination.prev_page_url },
+              ],
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { role: "button" },
+                  on: {
+                    click: function ($event) {
+                      return _vm.fetchProducts(_vm.pagination.prev_page_url)
+                    },
+                  },
+                },
+                [_vm._v("Previous")]
+              ),
+            ]
+          ),
+          _vm._v(" "),
+          _c("li", { staticClass: "page-item disabled" }, [
+            _c("a", { staticClass: "page-link text-dark" }, [
+              _vm._v(
+                "Page " +
+                  _vm._s(_vm.pagination.current_page) +
+                  " of " +
+                  _vm._s(_vm.pagination.last_page)
+              ),
+            ]),
+          ]),
+          _vm._v(" "),
+          _c(
+            "li",
+            {
+              class: [
+                { "page-item": true },
+                { disabled: !_vm.pagination.next_page_url },
+              ],
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { role: "button" },
+                  on: {
+                    click: function ($event) {
+                      return _vm.fetchProducts(_vm.pagination.next_page_url)
+                    },
+                  },
+                },
+                [_vm._v("Next")]
+              ),
+            ]
+          ),
+        ]),
+      ]
     ),
   ])
 }
