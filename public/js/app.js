@@ -5345,6 +5345,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   watch: {
     $route: function $route() {
@@ -5395,34 +5399,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -28434,7 +28410,7 @@ var render = function () {
             attrs: { id: "navbarCollapse" },
           },
           [
-            _c("ul", { staticClass: "navbar-nav" }, [
+            _c("ul", { staticClass: "navbar-nav mr-auto" }, [
               _c(
                 "li",
                 { staticClass: "nav-item" },
@@ -28473,6 +28449,8 @@ var render = function () {
                 1
               ),
             ]),
+            _vm._v(" "),
+            _vm._m(1),
           ]
         ),
       ],
@@ -28495,6 +28473,30 @@ var staticRenderFns = [
       },
       [_c("span", { staticClass: "navbar-toggler-icon" })]
     )
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("form", { staticClass: "form-inline my-2 my-lg-0" }, [
+      _c("input", {
+        staticClass: "form-control mr-sm-2",
+        attrs: {
+          type: "search",
+          placeholder: "Search",
+          "aria-label": "Search",
+        },
+      }),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-outline-success my-2 my-sm-0",
+          attrs: { type: "submit" },
+        },
+        [_vm._v("Search")]
+      ),
+    ])
   },
 ]
 render._withStripped = true
@@ -28573,6 +28575,10 @@ var render = function () {
             _c("div", { staticClass: "card-body text-center" }, [
               _c("h5", { staticClass: "card-title" }, [
                 _vm._v(_vm._s(product.name)),
+              ]),
+              _vm._v(" "),
+              _c("p", { staticClass: "card-text" }, [
+                _vm._v(_vm._s(product.description.substring(0, 100) + "....")),
               ]),
             ]),
             _vm._v(" "),
