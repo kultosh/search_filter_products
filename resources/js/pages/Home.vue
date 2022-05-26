@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-header">Home</div>
 
-          <div class="card-body">Home Page</div>
+          <div class="card-body"><FilterComponent /></div>
         </div>
       </div>
     </div>
@@ -13,7 +13,10 @@
 </template>
 
 <script>
+import FilterComponent from '../components/FilterComponent.vue';
 export default {
-    
+    components: {
+      FilterComponent
+    },
 }
 </script>

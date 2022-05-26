@@ -26,6 +26,7 @@
     "dependencies": {
         "autoprefixer": "10.4.5",
         "bootstrap-vue": "^2.22.0",
+        "laravel-vue-pagination": "^2.0.0",
         "vue-router": "^3.3.4"
     }
 }
