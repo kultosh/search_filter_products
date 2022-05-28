@@ -44,4 +44,13 @@ class ProductController extends Controller
            $query->whereIn('user_id', json_decode(request('sort')));
        })->orderBy('id','desc')->paginate(3);
    }
+
+   public function searchSortFilter()
+   {
+      if(request('sort') && request('search'))
+      {
+        return Product::whereIn('user_id', json_decode(request('sort')))->where('name','like','%' . request('search'). '%')->orderBy('id', 'desc')->paginate(3);
+      }
+      return false;
+   }
 }

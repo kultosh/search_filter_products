@@ -5541,6 +5541,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5551,29 +5553,31 @@ __webpack_require__.r(__webpack_exports__);
       products: [],
       pagination: {},
       isSearch: false,
-      page: null,
+      isSort: false,
       searchValue: "",
       sortValue: "",
-      isSort: false
+      page: null
     };
   },
   created: function created() {
     this.fetchProducts();
   },
   methods: {
+    // Search
     search: function search(param) {
       var _this = this;
 
       var url = '/api/product?search=' + param;
       this.searchValue = param;
-      axios.get(url).then(function (response) {
+      this.isSearch = true;
+      this.isSort ? this.searchSortFilter() : axios.get(url).then(function (response) {
         _this.products = response.data.data;
-        _this.isSearch = true;
         _this.page = response.data.next_page_url;
 
         _this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       });
     },
+    // Search Pagination
     searchPagination: function searchPagination(param) {
       var _this2 = this;
 
@@ -5586,6 +5590,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       });
     },
+    // Default Pagination
     fetchProducts: function fetchProducts(page_url) {
       var _this3 = this;
 
@@ -5599,25 +5604,32 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
+    // Filter 
     filterUser: function filterUser(param) {
       var _this4 = this;
 
       if (param.length > 0) {
         this.sortValue = JSON.stringify(param);
         this.isSort = true;
+        this.isSearch ? this.searchSortFilter() : axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+          console.log(response.data);
+          _this4.products = response.data.data;
+
+          _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
       } else {
         this.sortValue = "";
-        this.isSort = false;
-        this.isSearch = false;
+        this.isSort = false; // this.isSearch = false;
+
+        this.isSearch ? this.search(this.searchValue) : axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+          console.log(response.data);
+          _this4.products = response.data.data;
+
+          _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
       }
-
-      axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
-        console.log(response.data);
-        _this4.products = response.data.data;
-
-        _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
-      });
     },
+    // Sort Pagination
     sortPagination: function sortPagination(param) {
       var _this5 = this;
 
@@ -5630,6 +5642,41 @@ __webpack_require__.r(__webpack_exports__);
         _this5.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       });
     },
+    // SearchSort Filter
+    searchSortFilter: function searchSortFilter() {
+      var _this6 = this;
+
+      this.searchValue ? axios.get('/api/search-filter?sort=' + this.sortValue + '&search=' + this.searchValue).then(function (response) {
+        console.log(response.data.data);
+        _this6.products = response.data.data;
+        _this6.page = response.data.next_page_url;
+
+        _this6.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      }) : this.sortFilter();
+    },
+    searchSortPagination: function searchSortPagination(param) {
+      var _this7 = this;
+
+      console.log(param);
+      var url = param + '&sort=' + this.sortValue + '&search=' + this.searchValue;
+      axios.get(url).then(function (response) {
+        _this7.products = response.data.data;
+        _this7.page = response.data.next_page_url;
+
+        _this7.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      });
+    },
+    sortFilter: function sortFilter() {
+      var _this8 = this;
+
+      axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+        console.log(response.data);
+        _this8.products = response.data.data;
+
+        _this8.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      });
+    },
+    // Pagination Data
     makePagination: function makePagination(current_page, last_page, next_page_url, prev_page_url) {
       var pagination = {
         current_page: current_page,
@@ -28990,7 +29037,23 @@ var render = function () {
                 ],
               },
               [
-                _vm.isSearch
+                _vm.isSearch && _vm.isSort
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchSortPagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSearch
                   ? _c(
                       "a",
                       {
@@ -29060,7 +29123,23 @@ var render = function () {
                 ],
               },
               [
-                _vm.isSearch
+                _vm.isSearch && _vm.isSort
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchSortPagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSearch
                   ? _c(
                       "a",
                       {
