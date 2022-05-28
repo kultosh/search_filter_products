@@ -11,14 +11,8 @@
            <div class="card">
                 <div class="card-header">Author</div>
                 <div class="card-body">
-                    <p class="card-text">
-                        <input type="checkbox"> User 1
-                    </p>
-                    <p class="card-text">
-                        <input type="checkbox"> User 2
-                    </p>
-                    <p class="card-text">
-                        <input type="checkbox"> User 1
+                    <p class="card-text" v-for="(user,index) in users" v-bind:key="user.id">
+                        <input type="checkbox" :value="user.id" @click="(e) => filterUser(user.id,e)"> {{user.name}}
                     </p>
                 </div>
             </div>
@@ -47,11 +41,38 @@
         data() {
             return {
                 search: '',
+                users: [],
+                getFilter: []
             }
+        },
+        created() {
+            this.getUsers();
         },
         methods: {
             searchProduct() {
                 this.$emit('searchFilter', this.search);
+            },
+
+            getUsers() {
+                axios.get('/api/user/filter')
+                .then((response) => {
+                    this.users = response.data.data
+                })
+            },
+
+            filterUser(param,event) {
+                if(event.target.checked) {
+                    this.getFilter.push(param);
+                } else {
+                    this.getFilter.filter((data,index) => {
+                        if(data === param)
+                        {
+                            this.getFilter.splice(index,1);
+                        }
+                    });
+                }
+                console.log(this.getFilter);
+                this.$emit('userFilter', this.getFilter);
             }
         }
     }

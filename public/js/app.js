@@ -5337,22 +5337,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Filter",
   data: function data() {
     return {
-      search: ''
+      search: '',
+      users: [],
+      getFilter: []
     };
+  },
+  created: function created() {
+    this.getUsers();
   },
   methods: {
     searchProduct: function searchProduct() {
       this.$emit('searchFilter', this.search);
+    },
+    getUsers: function getUsers() {
+      var _this = this;
+
+      axios.get('/api/user/filter').then(function (response) {
+        _this.users = response.data.data;
+      });
+    },
+    filterUser: function filterUser(param, event) {
+      var _this2 = this;
+
+      if (event.target.checked) {
+        this.getFilter.push(param);
+      } else {
+        this.getFilter.filter(function (data, index) {
+          if (data === param) {
+            _this2.getFilter.splice(index, 1);
+          }
+        });
+      }
+
+      console.log(this.getFilter);
+      this.$emit('userFilter', this.getFilter);
     }
   }
 });
@@ -5514,6 +5536,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5525,7 +5552,9 @@ __webpack_require__.r(__webpack_exports__);
       pagination: {},
       isSearch: false,
       page: null,
-      searchValue: ""
+      searchValue: "",
+      sortValue: "",
+      isSort: false
     };
   },
   created: function created() {
@@ -5549,7 +5578,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       console.log(param);
-      var url = '/api/product' + param + '&search=' + this.searchValue;
+      var url = param + '&search=' + this.searchValue;
       axios.get(url).then(function (response) {
         _this2.products = response.data.data;
         _this2.page = response.data.next_page_url;
@@ -5560,7 +5589,7 @@ __webpack_require__.r(__webpack_exports__);
     fetchProducts: function fetchProducts(page_url) {
       var _this3 = this;
 
-      page_url = page_url ? '/api/product' + page_url : '/api/product';
+      page_url = page_url || '/api/product';
       axios.get(page_url).then(function (response) {
         console.log(response.data.data);
         _this3.products = response.data.data;
@@ -5568,6 +5597,37 @@ __webpack_require__.r(__webpack_exports__);
         _this3.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       })["catch"](function (error) {
         console.log(error);
+      });
+    },
+    filterUser: function filterUser(param) {
+      var _this4 = this;
+
+      if (param.length > 0) {
+        this.sortValue = JSON.stringify(param);
+        this.isSort = true;
+      } else {
+        this.sortValue = "";
+        this.isSort = false;
+        this.isSearch = false;
+      }
+
+      axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+        console.log(response.data);
+        _this4.products = response.data.data;
+
+        _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      });
+    },
+    sortPagination: function sortPagination(param) {
+      var _this5 = this;
+
+      console.log(param);
+      var url = param + '&sort=' + this.sortValue;
+      axios.get(url).then(function (response) {
+        _this5.products = response.data.data;
+        _this5.page = response.data.next_page_url;
+
+        _this5.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       });
     },
     makePagination: function makePagination(current_page, last_page, next_page_url, prev_page_url) {
@@ -28619,7 +28679,33 @@ var render = function () {
       ),
     ]),
     _vm._v(" "),
-    _vm._m(0),
+    _c("div", { staticClass: "filter mt-4" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [_vm._v("Author")]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "card-body" },
+          _vm._l(_vm.users, function (user, index) {
+            return _c("p", { key: user.id, staticClass: "card-text" }, [
+              _c("input", {
+                attrs: { type: "checkbox" },
+                domProps: { value: user.id },
+                on: {
+                  click: function (e) {
+                    return _vm.filterUser(user.id, e)
+                  },
+                },
+              }),
+              _vm._v(" " + _vm._s(user.name) + "\n                "),
+            ])
+          }),
+          0
+        ),
+      ]),
+      _vm._v(" "),
+      _vm._m(0),
+    ]),
   ])
 }
 var staticRenderFns = [
@@ -28627,46 +28713,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "filter mt-4" }, [
-      _c("div", { staticClass: "card" }, [
-        _c("div", { staticClass: "card-header" }, [_vm._v("Author")]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" User 1\n                "),
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" User 2\n                "),
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" User 1\n                "),
-          ]),
-        ]),
-      ]),
+    return _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-header" }, [_vm._v("Price")]),
       _vm._v(" "),
-      _c("div", { staticClass: "card" }, [
-        _c("div", { staticClass: "card-header" }, [_vm._v("Price")]),
+      _c("div", { staticClass: "card-body" }, [
+        _c("p", { staticClass: "card-text" }, [
+          _c("input", { attrs: { type: "checkbox" } }),
+          _vm._v(" $100\n                "),
+        ]),
         _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" $100\n                "),
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" $500\n                "),
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "card-text" }, [
-            _c("input", { attrs: { type: "checkbox" } }),
-            _vm._v(" $1000\n                "),
-          ]),
+        _c("p", { staticClass: "card-text" }, [
+          _c("input", { attrs: { type: "checkbox" } }),
+          _vm._v(" $500\n                "),
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "card-text" }, [
+          _c("input", { attrs: { type: "checkbox" } }),
+          _vm._v(" $1000\n                "),
         ]),
       ]),
     ])
@@ -28872,6 +28935,9 @@ var render = function () {
             searchFilter: function ($event) {
               return _vm.search($event)
             },
+            userFilter: function ($event) {
+              return _vm.filterUser($event)
+            },
           },
         }),
       ],
@@ -28893,7 +28959,7 @@ var render = function () {
                 ]),
                 _vm._v(" "),
                 _c("p", { staticClass: "card-text" }, [
-                  _vm._v(_vm._s(product.description.substring(0, 50) + "....")),
+                  _vm._v(_vm._s(product.description.substring(0, 45) + "....")),
                 ]),
               ]),
               _vm._v(" "),
@@ -28924,21 +28990,53 @@ var render = function () {
                 ],
               },
               [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: { role: "button" },
-                    on: {
-                      click: function ($event) {
-                        _vm.isSearch
-                          ? _vm.searchPagination(_vm.pagination.prev_page_url)
-                          : _vm.fetchProducts(_vm.pagination.prev_page_url)
+                _vm.isSearch
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
                       },
-                    },
-                  },
-                  [_vm._v("Previous")]
-                ),
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSort
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.sortPagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.fetchProducts(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    ),
               ]
             ),
             _vm._v(" "),
@@ -28962,21 +29060,53 @@ var render = function () {
                 ],
               },
               [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: { role: "button" },
-                    on: {
-                      click: function ($event) {
-                        _vm.isSearch
-                          ? _vm.searchPagination(_vm.pagination.next_page_url)
-                          : _vm.fetchProducts(_vm.pagination.next_page_url)
+                _vm.isSearch
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
                       },
-                    },
-                  },
-                  [_vm._v("Next")]
-                ),
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSort
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.sortPagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.fetchProducts(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    ),
               ]
             ),
           ]),

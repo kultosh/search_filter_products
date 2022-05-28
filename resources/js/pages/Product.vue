@@ -1,7 +1,7 @@
 <template>
   <div class="row mt-5">
      <div class="col-md-3">
-        <FilterComponent v-on:searchFilter="search($event)" />
+        <FilterComponent v-on:searchFilter="search($event)" v-on:userFilter="filterUser($event)" />
      </div>
 
      <div class="col-md-9">
@@ -11,7 +11,7 @@
               <img :src="product.image" alt="">
               <div class="card-body text-center">
                 <h5 class="card-title">{{product.name}}</h5>
-                <p class="card-text">{{product.description.substring(0,50)+'....'}}</p>
+                <p class="card-text">{{product.description.substring(0,45)+'....'}}</p>
               </div>
               
               <div class="card-body">${{product.price}}</div>
@@ -21,7 +21,9 @@
         <nav aria-label="Page navigation example" class="mt-4 mx-auto" style="width: 400px;">
           <ul class="pagination">
             <li v-bind:class="[{'page-item': true}, {disabled: !pagination.prev_page_url}]">
-              <a class="page-link" role="button" @click="isSearch ? searchPagination(pagination.prev_page_url) :fetchProducts(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-if="isSearch" @click="searchPagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else-if="isSort" @click="sortPagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else @click="fetchProducts(pagination.prev_page_url)">Previous</a>
             </li>
             <li class="page-item disabled">
               <a
@@ -29,7 +31,10 @@
               >Page {{pagination.current_page}} of {{pagination.last_page}}</a>
             </li>
             <li v-bind:class="[{'page-item': true}, {disabled: !pagination.next_page_url}]">
-              <a class="page-link" role="button" @click="isSearch ? searchPagination(pagination.next_page_url) :fetchProducts(pagination.next_page_url)">Next</a>
+              <!-- <a class="page-link" role="button" @click="isSearch ? searchPagination(pagination.next_page_url) :fetchProducts(pagination.next_page_url)">Next</a> -->
+              <a class="page-link" role="button" v-if="isSearch" @click="searchPagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else-if="isSort" @click="sortPagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else @click="fetchProducts(pagination.next_page_url)">Next</a>
             </li>
           </ul>
         </nav>
@@ -49,7 +54,9 @@ export default {
         pagination: {},
         isSearch: false,
         page: null,
-        searchValue: ""
+        searchValue: "",
+        sortValue: "",
+        isSort: false
       };
     },
 
@@ -71,7 +78,7 @@ export default {
       },
       searchPagination(param) {
         console.log(param);
-        const url = '/api/product'+param+'&search='+this.searchValue;
+        const url = param+'&search='+this.searchValue;
         axios.get(url)
         .then((response) => {
           this.products = response.data.data;
@@ -80,7 +87,7 @@ export default {
         });
       },
       fetchProducts(page_url) {
-        page_url = page_url ? '/api/product'+page_url : '/api/product';
+        page_url = page_url || '/api/product';
         axios.get(page_url)
         .then((response) => {
           console.log(response.data.data);
@@ -90,6 +97,37 @@ export default {
         .catch(error => {
           console.log(error);
         })
+      },
+
+      filterUser(param) {
+        if(param.length > 0)
+        {
+          this.sortValue = JSON.stringify(param);
+          this.isSort = true;
+        }
+        else
+        {
+          this.sortValue = "";
+          this.isSort = false;
+          this.isSearch = false;
+        }
+        axios.get('/api/filter?sort='+this.sortValue)
+        .then((response) => {
+          console.log(response.data);
+          this.products = response.data.data;
+          this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        })
+      },
+
+      sortPagination(param) {
+        console.log(param);
+        const url = param+'&sort='+this.sortValue;
+        axios.get(url)
+        .then((response) => {
+          this.products = response.data.data;
+          this.page = response.data.next_page_url
+          this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
       },
 
       makePagination(current_page, last_page, next_page_url, prev_page_url) {

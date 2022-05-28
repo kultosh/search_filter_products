@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -14,7 +15,7 @@ class ProductController extends Controller
 
         return Product::when(request('search'), function($query) {
             $query->where('name','like','%' . request('search'). '%');
-        })->orderBy('id', 'desc')->paginate(3)->setPath ( '' );
+        })->orderBy('id', 'desc')->paginate(3);
 
         // if($request->search)
         // {
@@ -22,23 +23,25 @@ class ProductController extends Controller
         // }
             // return $request;
             // return Product::orderBy('id', 'desc')->paginate($request->total);
-        $products = Product::orderBy('id', 'desc')->paginate(5);
-        return response(['data' => $products], 200);
+        // $products = Product::orderBy('id', 'desc')->paginate(5);
+        // return response(['data' => $products], 200);
     }
 
-    public function test()
-    {
-        $q = request('search');
-        if($q != ""){
-            $product = Product::where ( 'name', 'LIKE', '%' . $q . '%' )->paginate (3)->setPath ( '' );
-            return response(['data' => $product], 200);
-        }
-        // $pagination = $product->appends ( array (
-        //     'q' => Input::get ( 'q' ) 
-        // ) );
-        // if (count ( $user ) > 0)
-        // return view ( 'welcome' )->withDetails ( $user )->withQuery ( $q );
-        // }
-        // return view ( 'welcome' )->withMessage ( 'No Details found. Try to search again !' );
-    }
+   public function userFilter()
+   {
+       try {
+        $users = User::get(['id','name']);
+        return response(['data' => $users], 200);
+       } catch (\Exception $error) {
+           return response(['error' => $error], 500);
+       }
+   }
+
+   public function getFilter()
+   {
+    //    return response()->json(json_decode(request('sort')));
+       return Product::when(request('sort'), function($query) {
+           $query->whereIn('user_id', json_decode(request('sort')));
+       })->orderBy('id','desc')->paginate(3);
+   }
 }
