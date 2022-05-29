@@ -1,7 +1,7 @@
 <template>
   <div class="row mt-5">
      <div class="col-md-3">
-        <FilterComponent v-on:searchFilter="search($event)" v-on:userFilter="filterUser($event)" />
+        <FilterComponent v-on:searchFilter="search($event)" v-on:userFilter="filterUser($event)" v-on:priceFilter="filterPrice($event)" />
      </div>
 
      <div class="col-md-9">
@@ -21,9 +21,13 @@
         <nav aria-label="Page navigation example" class="mt-4 mx-auto" style="width: 400px;">
           <ul class="pagination">
             <li v-bind:class="[{'page-item': true}, {disabled: !pagination.prev_page_url}]">
-              <a class="page-link" role="button" v-if="isSearch && isSort" @click="searchSortPagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-if="isSearch && isSort && isSortPrice" @click="searchPricePagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else-if="isSort && isSortPrice" @click="searchPricePagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else-if="isSearch && isSort" @click="searchSortPagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else-if="isSearch && isSortPrice" @click="searchPricePagination(pagination.prev_page_url)">Previous</a>
               <a class="page-link" role="button" v-else-if="isSearch" @click="searchPagination(pagination.prev_page_url)">Previous</a>
               <a class="page-link" role="button" v-else-if="isSort" @click="sortPagination(pagination.prev_page_url)">Previous</a>
+              <a class="page-link" role="button" v-else-if="isSortPrice" @click="searchPricePagination(pagination.prev_page_url)">Previous</a>
               <a class="page-link" role="button" v-else @click="fetchProducts(pagination.prev_page_url)">Previous</a>
             </li>
             <li class="page-item disabled">
@@ -32,10 +36,13 @@
               >Page {{pagination.current_page}} of {{pagination.last_page}}</a>
             </li>
             <li v-bind:class="[{'page-item': true}, {disabled: !pagination.next_page_url}]">
-              <!-- <a class="page-link" role="button" @click="isSearch ? searchPagination(pagination.next_page_url) :fetchProducts(pagination.next_page_url)">Next</a> -->
-              <a class="page-link" role="button" v-if="isSearch && isSort" @click="searchSortPagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-if="isSearch && isSort && isSortPrice" @click="searchPricePagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else-if="isSort && isSortPrice" @click="searchPricePagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else-if="isSearch && isSort" @click="searchSortPagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else-if="isSearch && isSortPrice" @click="searchPricePagination(pagination.next_page_url)">Next</a>
               <a class="page-link" role="button" v-else-if="isSearch" @click="searchPagination(pagination.next_page_url)">Next</a>
               <a class="page-link" role="button" v-else-if="isSort" @click="sortPagination(pagination.next_page_url)">Next</a>
+              <a class="page-link" role="button" v-else-if="isSortPrice" @click="searchPricePagination(pagination.next_page_url)">Next</a>
               <a class="page-link" role="button" v-else @click="fetchProducts(pagination.next_page_url)">Next</a>
             </li>
           </ul>
@@ -56,8 +63,10 @@ export default {
         pagination: {},
         isSearch: false,
         isSort: false,
+        isSortPrice: false,
         searchValue: "",
         sortValue: "",
+        sortPrice: "",
         page: null,
       };
     },
@@ -72,13 +81,21 @@ export default {
         const url = '/api/product?search='+param;
         this.searchValue = param;
         this.isSearch = true;
-        this.isSort ? this.searchSortFilter() :
-        axios.get(url)
-        .then((response) => {
-          this.products = response.data.data;
-          this.page = response.data.next_page_url
-          this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
-        });
+        if((this.isSort && this.isSortPrice) || this.isSortPrice)
+        {
+          this.searchPriceFilter();
+        }
+        else if(this.isSort) {
+          this.searchSortFilter();
+        } 
+        else {
+          axios.get(url)
+          .then((response) => {
+            this.products = response.data.data;
+            this.page = response.data.next_page_url
+            this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+          });
+        }
       },
 
       // Search Pagination
@@ -98,7 +115,6 @@ export default {
         page_url = page_url || '/api/product';
         axios.get(page_url)
         .then((response) => {
-          console.log(response.data.data);
           this.products = response.data.data;
           this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
         })
@@ -113,26 +129,45 @@ export default {
         {
           this.sortValue = JSON.stringify(param);
           this.isSort = true;
-          this.isSearch ? this.searchSortFilter() :
-          axios.get('/api/filter?sort='+this.sortValue)
+          if((this.isSearch && this.isSortPrice) || this.isSortPrice)
+          {
+            this.searchPriceFilter();
+          }
+          else if(this.isSearch)
+          {
+            this.searchSortFilter();
+          }
+          else
+          {
+            axios.get('/api/filter?sort='+this.sortValue)
             .then((response) => {
               console.log(response.data);
               this.products = response.data.data;
               this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
             })
+          }
         }
         else
         {
           this.sortValue = "";
           this.isSort = false;
-          // this.isSearch = false;
-          this.isSearch ? this.search(this.searchValue) : 
-          axios.get('/api/filter?sort='+this.sortValue)
+          if((this.isSearch && this.isSortPrice) || this.isSortPrice)
+          {
+            this.searchPriceFilter();
+          }
+          else if(this.isSearch)
+          {
+            this.search(this.searchValue);
+          }
+          else 
+          {
+            axios.get('/api/filter?sort='+this.sortValue)
             .then((response) => {
               console.log(response.data);
               this.products = response.data.data;
               this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
             })
+          } 
         }
       },
 
@@ -179,6 +214,51 @@ export default {
         })
       },
 
+      // Price Filter
+      filterPrice(param) {
+        if(param.length > 0)
+        {
+          this.sortPrice = JSON.stringify(param);
+          this.isSortPrice = true;
+          axios.get('/api/search-filter-price?sort='+this.sortPrice+'&search='+this.searchValue+'&user='+this.sortValue)
+            .then((response) => {
+              this.products = response.data.data;
+              this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+            })
+        }
+        else
+        {
+          this.sortPrice = "";
+          this.isSortPrice = false;
+          this.isSearch ? this.search(this.searchValue) : 
+          axios.get('/api/search-filter-price?sort='+this.sortPrice+'&user='+this.sortValue)
+            .then((response) => {
+              this.products = response.data.data;
+              this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+            })
+        }
+      },
+
+      searchPriceFilter() {
+        axios.get('/api/search-filter-price?sort='+this.sortPrice+'&search='+this.searchValue+'&user='+this.sortValue)
+        .then((response) => {
+          this.products = response.data.data;
+          this.page = response.data.next_page_url
+          this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
+      },
+
+      searchPricePagination(param) {
+        console.log(param);
+        const url = param+'&sort='+this.sortPrice+'&search='+this.searchValue+'&user='+this.sortValue;
+        axios.get(url)
+        .then((response) => {
+          this.products = response.data.data;
+          this.page = response.data.next_page_url
+          this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        })
+      },
+      
       // Pagination Data
       makePagination(current_page, last_page, next_page_url, prev_page_url) {
         let pagination = {

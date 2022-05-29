@@ -23,3 +23,4 @@ Route::get('/product', [ProductController::class, 'index']);
 Route::get('/user/filter', [ProductController::class, 'userFilter']);
 Route::get('/filter', [ProductController::class, 'getFilter']);
 Route::get('/search-filter', [ProductController::class, 'searchSortFilter']);
+Route::get('/search-filter-price', [ProductController::class, 'filterPrice']);

@@ -11,7 +11,7 @@
            <div class="card">
                 <div class="card-header">Author</div>
                 <div class="card-body">
-                    <p class="card-text" v-for="(user,index) in users" v-bind:key="user.id">
+                    <p class="card-text" v-for="user in users" v-bind:key="user.id">
                         <input type="checkbox" :value="user.id" @click="(e) => filterUser(user.id,e)"> {{user.name}}
                     </p>
                 </div>
@@ -19,14 +19,8 @@
             <div class="card">
                 <div class="card-header">Price</div>
                 <div class="card-body">
-                    <p class="card-text">
-                        <input type="checkbox"> $100
-                    </p>
-                    <p class="card-text">
-                        <input type="checkbox"> $500
-                    </p>
-                    <p class="card-text">
-                        <input type="checkbox"> $1000
+                    <p class="card-text" v-for="price in prices" :key="price.id">
+                        <input type="checkbox" :value="price.id" @click="(e) => filterPrice(price.id,e)"> {{price.amount}}
                     </p>
                 </div>
             </div>
@@ -42,7 +36,14 @@
             return {
                 search: '',
                 users: [],
-                getFilter: []
+                getFilter: [],
+                getPriceFilter: [],
+                prices: [
+                    {id:1, amount: "Less than 100"},
+                    {id:2, amount: "From 100 to 500"},
+                    {id:3, amount: "From 500 to 1000"},
+                    {id:4, amount: "More than 1000"}
+                ]
             }
         },
         created() {
@@ -71,8 +72,23 @@
                         }
                     });
                 }
-                console.log(this.getFilter);
+                // console.log(this.getFilter);
                 this.$emit('userFilter', this.getFilter);
+            },
+
+            filterPrice(param, event) {
+                if(event.target.checked) {
+                    this.getPriceFilter.push(param);
+                } else {
+                    this.getPriceFilter.filter((data,index) => {
+                        if(data === param)
+                        {
+                            this.getPriceFilter.splice(index,1);
+                        }
+                    });
+                }
+                // console.log(this.getPriceFilter);
+                this.$emit('priceFilter', this.getPriceFilter);
             }
         }
     }

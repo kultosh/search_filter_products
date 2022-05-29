@@ -5331,19 +5331,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Filter",
   data: function data() {
     return {
       search: '',
       users: [],
-      getFilter: []
+      getFilter: [],
+      getPriceFilter: [],
+      prices: [{
+        id: 1,
+        amount: "Less than 100"
+      }, {
+        id: 2,
+        amount: "From 100 to 500"
+      }, {
+        id: 3,
+        amount: "From 500 to 1000"
+      }, {
+        id: 4,
+        amount: "More than 1000"
+      }]
     };
   },
   created: function created() {
@@ -5371,10 +5379,26 @@ __webpack_require__.r(__webpack_exports__);
             _this2.getFilter.splice(index, 1);
           }
         });
-      }
+      } // console.log(this.getFilter);
 
-      console.log(this.getFilter);
+
       this.$emit('userFilter', this.getFilter);
+    },
+    filterPrice: function filterPrice(param, event) {
+      var _this3 = this;
+
+      if (event.target.checked) {
+        this.getPriceFilter.push(param);
+      } else {
+        this.getPriceFilter.filter(function (data, index) {
+          if (data === param) {
+            _this3.getPriceFilter.splice(index, 1);
+          }
+        });
+      } // console.log(this.getPriceFilter);
+
+
+      this.$emit('priceFilter', this.getPriceFilter);
     }
   }
 });
@@ -5543,6 +5567,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5554,8 +5585,10 @@ __webpack_require__.r(__webpack_exports__);
       pagination: {},
       isSearch: false,
       isSort: false,
+      isSortPrice: false,
       searchValue: "",
       sortValue: "",
+      sortPrice: "",
       page: null
     };
   },
@@ -5570,12 +5603,19 @@ __webpack_require__.r(__webpack_exports__);
       var url = '/api/product?search=' + param;
       this.searchValue = param;
       this.isSearch = true;
-      this.isSort ? this.searchSortFilter() : axios.get(url).then(function (response) {
-        _this.products = response.data.data;
-        _this.page = response.data.next_page_url;
 
-        _this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
-      });
+      if (this.isSort && this.isSortPrice || this.isSortPrice) {
+        this.searchPriceFilter();
+      } else if (this.isSort) {
+        this.searchSortFilter();
+      } else {
+        axios.get(url).then(function (response) {
+          _this.products = response.data.data;
+          _this.page = response.data.next_page_url;
+
+          _this.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
+      }
     },
     // Search Pagination
     searchPagination: function searchPagination(param) {
@@ -5596,7 +5636,6 @@ __webpack_require__.r(__webpack_exports__);
 
       page_url = page_url || '/api/product';
       axios.get(page_url).then(function (response) {
-        console.log(response.data.data);
         _this3.products = response.data.data;
 
         _this3.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
@@ -5611,22 +5650,35 @@ __webpack_require__.r(__webpack_exports__);
       if (param.length > 0) {
         this.sortValue = JSON.stringify(param);
         this.isSort = true;
-        this.isSearch ? this.searchSortFilter() : axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
-          console.log(response.data);
-          _this4.products = response.data.data;
 
-          _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
-        });
+        if (this.isSearch && this.isSortPrice || this.isSortPrice) {
+          this.searchPriceFilter();
+        } else if (this.isSearch) {
+          this.searchSortFilter();
+        } else {
+          axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+            console.log(response.data);
+            _this4.products = response.data.data;
+
+            _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+          });
+        }
       } else {
         this.sortValue = "";
-        this.isSort = false; // this.isSearch = false;
+        this.isSort = false;
 
-        this.isSearch ? this.search(this.searchValue) : axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
-          console.log(response.data);
-          _this4.products = response.data.data;
+        if (this.isSearch && this.isSortPrice || this.isSortPrice) {
+          this.searchPriceFilter();
+        } else if (this.isSearch) {
+          this.search(this.searchValue);
+        } else {
+          axios.get('/api/filter?sort=' + this.sortValue).then(function (response) {
+            console.log(response.data);
+            _this4.products = response.data.data;
 
-          _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
-        });
+            _this4.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+          });
+        }
       }
     },
     // Sort Pagination
@@ -5674,6 +5726,50 @@ __webpack_require__.r(__webpack_exports__);
         _this8.products = response.data.data;
 
         _this8.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      });
+    },
+    // Price Filter
+    filterPrice: function filterPrice(param) {
+      var _this9 = this;
+
+      if (param.length > 0) {
+        this.sortPrice = JSON.stringify(param);
+        this.isSortPrice = true;
+        axios.get('/api/search-filter-price?sort=' + this.sortPrice + '&search=' + this.searchValue + '&user=' + this.sortValue).then(function (response) {
+          _this9.products = response.data.data;
+
+          _this9.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
+      } else {
+        this.sortPrice = "";
+        this.isSortPrice = false;
+        this.isSearch ? this.search(this.searchValue) : axios.get('/api/search-filter-price?sort=' + this.sortPrice + '&user=' + this.sortValue).then(function (response) {
+          _this9.products = response.data.data;
+
+          _this9.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+        });
+      }
+    },
+    searchPriceFilter: function searchPriceFilter() {
+      var _this10 = this;
+
+      axios.get('/api/search-filter-price?sort=' + this.sortPrice + '&search=' + this.searchValue + '&user=' + this.sortValue).then(function (response) {
+        _this10.products = response.data.data;
+        _this10.page = response.data.next_page_url;
+
+        _this10.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
+      });
+    },
+    searchPricePagination: function searchPricePagination(param) {
+      var _this11 = this;
+
+      console.log(param);
+      var url = param + '&sort=' + this.sortPrice + '&search=' + this.searchValue + '&user=' + this.sortValue;
+      axios.get(url).then(function (response) {
+        _this11.products = response.data.data;
+        _this11.page = response.data.next_page_url;
+
+        _this11.makePagination(response.data.current_page, response.data.last_page, response.data.next_page_url, response.data.prev_page_url);
       });
     },
     // Pagination Data
@@ -28733,7 +28829,7 @@ var render = function () {
         _c(
           "div",
           { staticClass: "card-body" },
-          _vm._l(_vm.users, function (user, index) {
+          _vm._l(_vm.users, function (user) {
             return _c("p", { key: user.id, staticClass: "card-text" }, [
               _c("input", {
                 attrs: { type: "checkbox" },
@@ -28751,37 +28847,33 @@ var render = function () {
         ),
       ]),
       _vm._v(" "),
-      _vm._m(0),
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [_vm._v("Price")]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "card-body" },
+          _vm._l(_vm.prices, function (price) {
+            return _c("p", { key: price.id, staticClass: "card-text" }, [
+              _c("input", {
+                attrs: { type: "checkbox" },
+                domProps: { value: price.id },
+                on: {
+                  click: function (e) {
+                    return _vm.filterPrice(price.id, e)
+                  },
+                },
+              }),
+              _vm._v(" " + _vm._s(price.amount) + "\n                "),
+            ])
+          }),
+          0
+        ),
+      ]),
     ]),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Price")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-body" }, [
-        _c("p", { staticClass: "card-text" }, [
-          _c("input", { attrs: { type: "checkbox" } }),
-          _vm._v(" $100\n                "),
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "card-text" }, [
-          _c("input", { attrs: { type: "checkbox" } }),
-          _vm._v(" $500\n                "),
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "card-text" }, [
-          _c("input", { attrs: { type: "checkbox" } }),
-          _vm._v(" $1000\n                "),
-        ]),
-      ]),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -28985,6 +29077,9 @@ var render = function () {
             userFilter: function ($event) {
               return _vm.filterUser($event)
             },
+            priceFilter: function ($event) {
+              return _vm.filterPrice($event)
+            },
           },
         }),
       ],
@@ -29037,7 +29132,39 @@ var render = function () {
                 ],
               },
               [
-                _vm.isSearch && _vm.isSort
+                _vm.isSearch && _vm.isSort && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSort && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSearch && _vm.isSort
                   ? _c(
                       "a",
                       {
@@ -29046,6 +29173,22 @@ var render = function () {
                         on: {
                           click: function ($event) {
                             return _vm.searchSortPagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSearch && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
                               _vm.pagination.prev_page_url
                             )
                           },
@@ -29078,6 +29221,22 @@ var render = function () {
                         on: {
                           click: function ($event) {
                             return _vm.sortPagination(
+                              _vm.pagination.prev_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Previous")]
+                    )
+                  : _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
                               _vm.pagination.prev_page_url
                             )
                           },
@@ -29123,7 +29282,39 @@ var render = function () {
                 ],
               },
               [
-                _vm.isSearch && _vm.isSort
+                _vm.isSearch && _vm.isSort && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSort && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSearch && _vm.isSort
                   ? _c(
                       "a",
                       {
@@ -29132,6 +29323,22 @@ var render = function () {
                         on: {
                           click: function ($event) {
                             return _vm.searchSortPagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSearch && _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
                               _vm.pagination.next_page_url
                             )
                           },
@@ -29164,6 +29371,22 @@ var render = function () {
                         on: {
                           click: function ($event) {
                             return _vm.sortPagination(
+                              _vm.pagination.next_page_url
+                            )
+                          },
+                        },
+                      },
+                      [_vm._v("Next")]
+                    )
+                  : _vm.isSortPrice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: { role: "button" },
+                        on: {
+                          click: function ($event) {
+                            return _vm.searchPricePagination(
                               _vm.pagination.next_page_url
                             )
                           },
