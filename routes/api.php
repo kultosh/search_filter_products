@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,12 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::get('/product', [ProductController::class, 'index']);
-Route::get('/user/filter', [ProductController::class, 'userFilter']);
-Route::get('/filter', [ProductController::class, 'getFilter']);
-Route::get('/search-filter', [ProductController::class, 'searchSortFilter']);
-Route::get('/search-filter-price', [ProductController::class, 'filterPrice']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/product', [ProductController::class, 'index']);
+    Route::get('/user/filter', [ProductController::class, 'userFilter']);
+    Route::get('/filter', [ProductController::class, 'getFilter']);
+    Route::get('/search-filter', [ProductController::class, 'searchSortFilter']);
+    Route::get('/search-filter-price', [ProductController::class, 'filterPrice']);
+    Route::get('/logout', [AuthController::class, 'logout']);
+});

@@ -18,5 +18,14 @@ export default {
     components: {
       FilterComponent
     },
+    created() {
+      if (localStorage.getItem('token')) {
+        return true;
+      }
+      else
+      {
+        this.$router.push('/login')
+      }
+    }
 }
 </script>
