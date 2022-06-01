@@ -23,13 +23,23 @@
             </router-link>
           </li>
 
-          <li class="nav-item" v-if="getToken">
+          <!-- <li class="nav-item" v-if="getToken">
             <router-link
               class="nav-link"
               data-toggle="collapse"
               :to="{ name: 'product' }"
             >
               Product
+            </router-link>
+          </li> -->
+
+          <li class="nav-item" v-if="getToken">
+            <router-link
+              class="nav-link"
+              data-toggle="collapse"
+              :to="{ name: 'profile' }"
+            >
+              Profile
             </router-link>
           </li>
         </ul>
@@ -60,7 +70,7 @@ export default {
           if(localStorage.getItem('token'))
           {
               this.getToken = true
-              console.log(this.getToken)
+              // console.log(this.getToken)
           }
       },
 

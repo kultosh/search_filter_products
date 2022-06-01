@@ -50,7 +50,7 @@ export default {
                 let token = res.data.token
                 localStorage.setItem("token", token)
                 this.$emit('getLoggedIn', this.token)
-                this.$router.push('/product')
+                this.$router.push('/')
             })
             .catch(err => {
                 err.response.status === 401 ? this.errorMessage = "Please enter valid credentials." : ""
