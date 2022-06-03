@@ -4,6 +4,17 @@
         { "src": "/api/index.php", "use": "vercel-php@0.3.1" },
         { "src": "/public/**", "use": "@vercel/static" }
     ],
+
+    "routes": [
+        {
+            "src": "/(css|js)/(.*)",
+            "dest": "public/$1/$2"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
+    ],
     "headers": [
         {
             "source": "/api/(.*)",
@@ -15,6 +26,7 @@
             ]
         }
     ],
+    
     "env": {
         "APP_NAME": "Vercel Laravel",
         "APP_ENV": "production",
