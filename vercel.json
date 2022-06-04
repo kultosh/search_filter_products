@@ -11,6 +11,10 @@
         },
         {
             "src": "/(.*)",
+            "methods": [
+                "POST",
+                "GET"
+            ],
             "dest": "/api/index.php"
         }
     ],
