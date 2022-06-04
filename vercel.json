@@ -20,6 +20,14 @@
                 "GET"
             ],
             "dest": "/api/index.php"
+        },
+        {
+            "src": "/(.*)",
+            "methods": [
+                "POST",
+                "GET"
+            ],
+            "dest": "/routes/api.php"
         }
     ],
     "env": {
