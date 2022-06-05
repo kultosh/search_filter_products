@@ -40,7 +40,7 @@ export default {
         userLogIn() {
             console.log(this.user)
             let data = this.user
-            axios.post('/api/login', data, {
+            axios.post('/login', data, {
                 headers: {
                     'content-type': 'application/json'
                 }
