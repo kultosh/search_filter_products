@@ -23,7 +23,7 @@
             </router-link>
           </li>
 
-          <!-- <li class="nav-item" v-if="getToken">
+          <li class="nav-item" v-if="getToken">
             <router-link
               class="nav-link"
               data-toggle="collapse"
@@ -31,7 +31,7 @@
             >
               Product
             </router-link>
-          </li> -->
+          </li>
 
           <li class="nav-item" v-if="getToken">
             <router-link
