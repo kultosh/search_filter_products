@@ -5926,7 +5926,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _helpers_ApiHelper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/ApiHelper */ "./resources/js/helpers/ApiHelper.js");
 //
 //
 //
@@ -5948,7 +5947,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -5960,24 +5958,26 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
-    localStorage.getItem('token') ? this.$router.push('/product') : true;
+    localStorage.getItem('token') ? this.$router.push('/') : true;
   },
   methods: {
     userLogIn: function userLogIn() {
       var _this = this;
 
-      console.log(this.user);
       var data = this.user;
-      (0,_helpers_ApiHelper__WEBPACK_IMPORTED_MODULE_0__.postRequest)('/api/login', data).then(function (res) {
-        // console.log(res.token)
-        var token = res.token;
+      axios.post('/api/login', data, {
+        headers: {
+          'content-type': 'application/json'
+        }
+      }).then(function (res) {
+        var token = res.data.token;
         localStorage.setItem("token", token);
 
         _this.$emit('getLoggedIn', _this.token);
 
         _this.$router.push('/');
       })["catch"](function (err) {
-        console.log(err);
+        err.response.status === 401 ? _this.errorMessage = "Please enter valid credentials." : "";
       });
     }
   }
@@ -6198,8 +6198,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getRequest": () => (/* binding */ getRequest),
-/* harmony export */   "postRequest": () => (/* binding */ postRequest)
+/* harmony export */   "getRequest": () => (/* binding */ getRequest)
 /* harmony export */ });
 var getRequest = function getRequest(url) {
   return axios.get(url, {
@@ -6208,13 +6207,6 @@ var getRequest = function getRequest(url) {
     }
   }).then(function (res) {
     return res.data;
-  });
-};
-var postRequest = function postRequest(url, data) {
-  return axios.post(url, data).then(function (res) {
-    return res.data;
-  })["catch"](function (err) {
-    return err.response.data;
   });
 };
 

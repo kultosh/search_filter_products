@@ -5,7 +5,3 @@ export const getRequest = (url) => {
         },
     }).then(res => res.data);
 };
-
-export const postRequest = (url, data) => {
-    return axios.post(url, data).then(res => res.data).catch(err => err.response.data);
-}
