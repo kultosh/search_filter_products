@@ -8,35 +8,26 @@
         class="navbar-toggler"
         data-toggle="collapse"
         data-target="#navbarCollapse"
+        @click="showNav"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div id="navbarCollapse" class="collapse navbar-collapse">
+      <div id="navbarCollapse" class="navbar-collapse" :class="{collapse: isCollapse}">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item" v-if="getToken">
             <router-link
               class="nav-link"
-              data-toggle="collapse"
+              
               :to="{ name: 'home' }"
             >
               Home
             </router-link>
           </li>
 
-          <!-- <li class="nav-item" v-if="getToken">
-            <router-link
-              class="nav-link"
-              data-toggle="collapse"
-              :to="{ name: 'product' }"
-            >
-              Product
-            </router-link>
-          </li> -->
-
           <li class="nav-item" v-if="getToken">
             <router-link
               class="nav-link"
-              data-toggle="collapse"
+              
               :to="{ name: 'profile' }"
             >
               Profile
@@ -56,10 +47,11 @@
 <script>
 export default {
   data() {
-        return {
-            getToken: false
-        }
-    },
+      return {
+          getToken: false,
+          isCollapse: true
+      }
+  },
 
   created() {
     this.myToken();
@@ -82,13 +74,11 @@ export default {
           localStorage.removeItem('token')
           this.getToken = false
           this.$router.push('/login')
+      },
+
+      showNav() {
+       this.isCollapse = this.isCollapse ? false : true
       }
-  },
-  watch: {
-    // this.myToken();
-    $route() {
-      $("#navbarCollapse").collapse("hide");
-    },
-  },
+  }
 };
 </script>

@@ -13,13 +13,16 @@
                                 <th scope="col">Image</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="!isLoading">
                             <tr v-for="(product,index) in products" :key="product.id">
                                 <th scope="row" class="align-middle">{{(pagination.current_page*pagination.per_page)-pagination.per_page + index+1}}</th>
                                 <td class="align-middle">{{product.name}}</td>
                                 <td class="align-middle">{{product.price}}</td>
                                 <td><img :src="product.image" alt="" height="50" /></td>
                             </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr><td colspan="4" class="text-center">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -52,35 +55,30 @@
 </template>
 
 <script>
+    import {getRequest} from "../helpers/ApiHelper";
     export default ({
         data() {
             return {
                 user: {},
                 products: [],
-                pagination: {}
+                pagination: {},
+                isLoading: false
             }
         },
 
         created() {
             const token = localStorage.getItem("token");
-            token ? axios.get(
-              "/api/profile",
-              {
-                headers: {
-                  authorization: "Bearer " + token,
-                },
-              }
-            )
-            .then((response) => {
-            //   console.log(response.data.products.data);
-              this.user = response.data.user;
-              this.products = response.data.products.data;
+            this.isLoading = true;
+            token ? getRequest("/api/profile").then((response) => {
+              this.user = response.user;
+              this.products = response.products.data;
+              this.isLoading = false;
               this.makePagination(
-                response.data.products.current_page,
-                response.data.products.last_page,
-                response.data.products.next_page_url,
-                response.data.products.prev_page_url,
-                response.data.products.per_page
+                response.products.current_page,
+                response.products.last_page,
+                response.products.next_page_url,
+                response.products.prev_page_url,
+                response.products.per_page
               );
             }) : this.$router.push("/login");
         },
@@ -89,20 +87,16 @@
             getPagination(param) {
                 const token = localStorage.getItem("token");
                 const url = param.split("?");
-                axios.get('/api/pagination?'+url[1], {
-                    headers: {
-                    authorization: "Bearer " + token,
-                    },
-                })
-                .then((response) => {
-                    // console.log(response.data.data);
-                    this.products = response.data.data;
+                this.isLoading = true;
+                getRequest('/api/pagination?'+url[1]).then((response) => {
+                    this.products = response.data;
+                    this.isLoading = false;
                     this.makePagination(
-                        response.data.current_page,
-                        response.data.last_page,
-                        response.data.next_page_url,
-                        response.data.prev_page_url,
-                        response.data.per_page
+                        response.current_page,
+                        response.last_page,
+                        response.next_page_url,
+                        response.prev_page_url,
+                        response.per_page
                     );
                 })  
             },

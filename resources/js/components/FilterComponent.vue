@@ -5,11 +5,12 @@
         <input
           class="form-control mr-sm-2"
           type="search"
-          placeholder="Search"
+          placeholder="Search..."
           aria-label="Search"
           v-model="search"
+          size="19"
         />
-        <button type="submit">S</button>
+        <button class="btn btn-secondary btn-sm" type="submit" title="Click to search" size="2">O</button>
       </form>
     </div>
 
@@ -45,6 +46,7 @@
 </template>
 
 <script>
+import {getRequest} from "../helpers/ApiHelper";
 export default {
   name: "Filter",
   data() {
@@ -74,16 +76,9 @@ export default {
     },
 
     getUsers() {
-      this.token = localStorage.getItem("token");
-      axios
-        .get("/api/user/filter", {
-          headers: {
-            authorization: "Bearer " + this.token,
-          },
-        })
-        .then((response) => {
-          this.users = response.data.data;
-        });
+       getRequest("/api/user/filter").then((response) => {
+        this.users = response.data;
+      });
     },
 
     filterUser(param, event) {
