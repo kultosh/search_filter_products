@@ -5947,6 +5947,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -5954,7 +5957,8 @@ __webpack_require__.r(__webpack_exports__);
         'email': '',
         'password': ''
       },
-      errorMessage: ""
+      errorMessage: "",
+      isLoading: false
     };
   },
   created: function created() {
@@ -5965,11 +5969,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       var data = this.user;
+      this.isLoading = true;
       axios.post('/api/login', data, {
         headers: {
           'content-type': 'application/json'
         }
       }).then(function (res) {
+        _this.isLoading = false;
         var token = res.data.token;
         localStorage.setItem("token", token);
 
@@ -5977,6 +5983,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.$router.push('/');
       })["catch"](function (err) {
+        _this.isLoading = false;
         err.response.status === 401 ? _this.errorMessage = "Please enter valid credentials." : "";
       });
     }
@@ -29740,101 +29747,109 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row mt-5" }, [
-      _c("div", { staticClass: "col-md-6 offset-3 bg-light p-5" }, [
-        _c("p", { staticClass: "text-danger" }, [
-          _vm._v(_vm._s(_vm.errorMessage)),
-        ]),
-        _vm._v(" "),
-        _c(
-          "form",
-          {
-            on: {
-              submit: function ($event) {
-                $event.preventDefault()
-                return _vm.userLogIn.apply(null, arguments)
-              },
-            },
-          },
-          [
-            _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "exampleInputEmail1" } }, [
-                _vm._v("Email address"),
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user.email,
-                    expression: "user.email",
-                  },
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "email",
-                  id: "exampleInputEmail1",
-                  "aria-describedby": "emailHelp",
-                  required: "",
-                },
-                domProps: { value: _vm.user.email },
-                on: {
-                  click: function ($event) {
-                    _vm.errorMessage = ""
-                  },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user, "email", $event.target.value)
-                  },
-                },
-              }),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "exampleInputPassword1" } }, [
-                _vm._v("Password"),
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.user.password,
-                    expression: "user.password",
-                  },
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "password",
-                  id: "exampleInputPassword1",
-                  required: "",
-                },
-                domProps: { value: _vm.user.password },
-                on: {
-                  click: function ($event) {
-                    _vm.errorMessage = ""
-                  },
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.user, "password", $event.target.value)
-                  },
-                },
-              }),
+      !_vm.isLoading
+        ? _c("div", { staticClass: "col-md-6 offset-3 bg-light p-5" }, [
+            _c("p", { staticClass: "text-danger" }, [
+              _vm._v(_vm._s(_vm.errorMessage)),
             ]),
             _vm._v(" "),
             _c(
-              "button",
-              { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-              [_vm._v("Submit")]
+              "form",
+              {
+                on: {
+                  submit: function ($event) {
+                    $event.preventDefault()
+                    return _vm.userLogIn.apply(null, arguments)
+                  },
+                },
+              },
+              [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "exampleInputEmail1" } }, [
+                    _vm._v("Email address"),
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user.email,
+                        expression: "user.email",
+                      },
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "email",
+                      id: "exampleInputEmail1",
+                      "aria-describedby": "emailHelp",
+                      required: "",
+                    },
+                    domProps: { value: _vm.user.email },
+                    on: {
+                      click: function ($event) {
+                        _vm.errorMessage = ""
+                      },
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.user, "email", $event.target.value)
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "exampleInputPassword1" } }, [
+                    _vm._v("Password"),
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.user.password,
+                        expression: "user.password",
+                      },
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "password",
+                      id: "exampleInputPassword1",
+                      required: "",
+                    },
+                    domProps: { value: _vm.user.password },
+                    on: {
+                      click: function ($event) {
+                        _vm.errorMessage = ""
+                      },
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.user, "password", $event.target.value)
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+                  [_vm._v("Login")]
+                ),
+              ]
             ),
-          ]
-        ),
-      ]),
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.isLoading
+        ? _c("div", { staticClass: "col-md-6 offset-3 bg-light p-5" }, [
+            _c("p", { staticClass: "text-center" }, [_vm._v("Processing....")]),
+          ])
+        : _vm._e(),
     ]),
   ])
 }
