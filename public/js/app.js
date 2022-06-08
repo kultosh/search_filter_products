@@ -5871,12 +5871,7 @@ __webpack_require__.r(__webpack_exports__);
         this.sortPrice = "";
         this.isSortPrice = false;
         this.isLoading = true;
-        this.isSearch ? this.search(this.searchValue) : (0,_helpers_ApiHelper__WEBPACK_IMPORTED_MODULE_0__.getRequest)("/api/search-filter-price?sort=" + this.sortPrice + "&user=" + this.sortValue).then(function (response) {
-          _this9.products = response.data;
-          _this9.isLoading = false;
-
-          _this9.makePagination(response.current_page, response.last_page, response.next_page_url, response.prev_page_url, response.total);
-        });
+        this.isSearch ? this.search(this.searchValue) : this.sortFilter();
       }
     },
     searchPriceFilter: function searchPriceFilter() {

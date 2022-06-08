@@ -427,20 +427,7 @@ export default {
         this.isLoading = true;
         this.isSearch
           ? this.search(this.searchValue)
-          : getRequest("/api/search-filter-price?sort=" +
-                  this.sortPrice +
-                  "&user=" +
-                  this.sortValue).then((response) => {
-                this.products = response.data;
-                this.isLoading = false;
-                this.makePagination(
-                  response.current_page,
-                  response.last_page,
-                  response.next_page_url,
-                  response.prev_page_url,
-                  response.total
-                );
-              });
+          : this.sortFilter();
       }
     },
 
