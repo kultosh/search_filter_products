@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import {postRequest} from '../helpers/ApiHelper';
 export default {
     data () {
         return {
@@ -33,22 +32,25 @@ export default {
     },
 
     created() {
-        localStorage.getItem('token') ? this.$router.push('/product') : true;
+        localStorage.getItem('token') ? this.$router.push('/') : true;
     },
 
     methods: {
         userLogIn() {
-            console.log(this.user)
             let data = this.user
-            postRequest('/api/login',data).then(res => {
-                // console.log(res.token)
-                let token = res.token
+            axios.post('/api/login', data, {
+                headers: {
+                    'content-type': 'application/json'
+                }
+            })
+            .then(res => {
+                let token = res.data.token
                 localStorage.setItem("token", token)
                 this.$emit('getLoggedIn', this.token)
                 this.$router.push('/')
             })
             .catch(err => {
-                console.log(err);
+                err.response.status === 401 ? this.errorMessage = "Please enter valid credentials." : ""
             })
         }
     }
