@@ -99,7 +99,10 @@ class ProductController extends Controller
                     $query->orWhere('price', '>', '1000');
                 })->orderBy('price', 'desc')->paginate(3);
             }
-            return false;
+            else
+            {
+                return Product::orderBy('id', 'desc')->paginate(3);
+            }
         } catch (Exception $error) {
             return response(['error' => $error], 500);
         }

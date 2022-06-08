@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Home from './pages/Home.vue';
-import Product from './pages/Product.vue';
 import Login from './pages/Login.vue';
 import Profile from './pages/Profile.vue';
 
@@ -16,11 +15,6 @@ const router = new VueRouter({
             path: '/',
             name: 'home',
             component: Home
-        },
-        {
-            path: '/product',
-            name: 'product',
-            component: Product
         },
         {
             path: '/profile',
